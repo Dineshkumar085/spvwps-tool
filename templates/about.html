@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About — SPVWPS Tool</title>
+  <style>
+    :root {
+      --primary: #1a5276;
+      --accent:  #2ecc71;
+      --bg:      #f4f6f9;
+      --card:    #ffffff;
+      --border:  #d5d8dc;
+      --text:    #2c3e50;
+      --muted:   #7f8c8d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 18px 32px;
+      border-bottom: 4px solid var(--accent);
+    }
+    header h1 { font-size: 1.4rem; }
+    header p  { font-size: 0.82rem; opacity: 0.75; margin-top: 4px; }
+
+    .container {
+      max-width: 900px;
+      margin: 48px auto;
+      padding: 0 20px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px 48px;
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a5276 60%, #2ecc71 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: 2px;
+      border: 3px solid var(--accent);
+    }
+    .hero-info h2 {
+      font-size: 1.55rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .hero-info .role {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+      letter-spacing: 0.3px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .badge-green  { background: #e8f8f0; color: #1a7a4a; border: 1px solid #a9dfbf; }
+    .badge-blue   { background: #eaf2fb; color: #1a5276; border: 1px solid #aed6f1; }
+    .badge-orange { background: #fef5e7; color: #9a6000; border: 1px solid #f9d88d; }
+    .hero-info p {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 36px;
+      margin-bottom: 20px;
+    }
+    .section-card h3 {
+      font-size: 1rem;
+      color: var(--primary);
+      font-weight: 700;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* ── GUIDE CARD ── */
+    .guide-card {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .avatar-sm {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #154360 60%, #1abc9c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      border: 2px solid #1abc9c;
+      letter-spacing: 1px;
+    }
+    .guide-info h4 {
+      font-size: 1.05rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .guide-info .g-role {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .guide-info p {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    /* ── METHODOLOGY TABLE ── */
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .method-item {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      padding: 12px 16px;
+    }
+    .method-item .m-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .method-item .m-val {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ── REFERENCES ── */
+    .ref-list {
+      list-style: none;
+      padding: 0;
+    }
+    .ref-list li {
+      font-size: 0.84rem;
+      color: var(--text);
+      line-height: 1.7;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+      padding-left: 20px;
+      position: relative;
+    }
+    .ref-list li:last-child { border-bottom: none; }
+    .ref-list li::before {
+      content: "[" attr(data-n) "]";
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.78rem;
+    }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer {
+      background: #fef9e7;
+      border: 1px solid #f9e79f;
+      border-left: 4px solid #f39c12;
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 0.82rem;
+      color: #7d6608;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    /* ── FOOTER ── */
+    .about-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 24px 0 40px;
+      line-height: 1.8;
+    }
+    .about-footer strong { color: var(--primary); }
+
+    /* ── BACK LINK ── */
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 28px;
+      padding: 8px 20px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .back-btn:hover { background: #154360; }
+
+    @media (max-width: 640px) {
+      .hero { flex-direction: column; padding: 28px 20px; }
+      .method-grid { grid-template-columns: 1fr; }
+      .guide-card { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☀️ SPVWPS Design Tool — About</h1>
+  <p>Solar Photovoltaic Water Pumping System · FAO-56 Penman-Monteith · PM-KUSUM</p>
+</header>
+
+<div class="container">
+
+  <a href="/" class="back-btn">← Back to Tool</a>
+
+  <!-- ── DEVELOPER ── -->
+  <div class="hero">
+    <div class="avatar">DK</div>
+    <div class="hero-info">
+      <h2>Dinesh Kumar</h2>
+      <div class="role">
+        B.Tech  — Agricultural Engineering &nbsp;|&nbsp;
+        Dr. Rajendra Prasad Central Agricultural University, Pusa, Bihar
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-blue">Agricultural Engineering</span>
+        <span class="badge badge-green">Solar Irrigation</span>
+        <span class="badge badge-green">FAO-56 Methodology</span>
+        <span class="badge badge-orange">PM-KUSUM</span>
+        <span class="badge badge-blue">Python · Flask</span>
+      </div>
+      <p>
+        Developed as part of B.Tech final year research project at RPCAU Pusa.
+        This tool implements the internationally accepted FAO-56 Penman-Monteith
+        evapotranspiration methodology for accurate crop water requirement estimation
+        and solar pump sizing — bridging the gap between scientific irrigation design
+        and on-ground implementation under India's PM-KUSUM scheme.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── GUIDE ── -->
+  <div class="section-card">
+    <h3>Project Guide</h3>
+    <div class="guide-card">
+      <div class="avatar-sm">RC</div>
+      <div class="guide-info">
+        <h4>Dr. Ravish Chandra</h4>
+        <div class="g-role">
+          Faculty Guide · Department of irrigation and drainage engineering ·
+          Dr. Rajendra Prasad Central Agricultural University, Pusa, Bihar
+        </div>
+        <p>
+          This project was developed under the expert guidance of Dr. Ravish Chandra,
+          whose mentorship shaped the scientific rigour of the methodology —
+          from FAO-56 reference evapotranspiration computation to PM-KUSUM
+          compliant system sizing and cost estimation frameworks.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ABOUT THE TOOL ── -->
+  <div class="section-card">
+    <h3>About This Tool</h3>
+    <p style="font-size:0.92rem; line-height:1.8; margin-bottom:18px;">
+      The <strong>SPVWPS Design &amp; Sizing Tool</strong> is a web-based decision
+      support system for the optimal design of Solar Photovoltaic Water Pumping
+      Systems for agricultural irrigation. It integrates real-time climatological
+      data from NASA POWER API with FAO-56 crop water requirement models to compute
+      accurate pump hydraulic power, solar PV array sizing, and PM-KUSUM aligned
+      cost estimates — eliminating the need for manual spreadsheet calculations
+      that are prone to significant oversizing errors.
+    </p>
+    <div class="method-grid">
+      <div class="method-item">
+        <div class="m-label">ET₀ Computation</div>
+        <div class="m-val">FAO-56 Penman-Monteith (Eq. 6) — full Rns, Rnl, Δ, γ implementation</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Crop Coefficient</div>
+        <div class="m-val">FAO-56 four-stage Kc interpolation with local climate adjustment (Eq. 62)</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Effective Rainfall</div>
+        <div class="m-val">USDA-SCS Technical Release No. 21 methodology</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Pump Power</div>
+        <div class="m-val">ρgQH / (η_pump × η_motor) with 20% ISO 9906 safety margin</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Solar PV Sizing</div>
+        <div class="m-val">E_daily / (PSH × PR) — PSH from NASA POWER GHI data</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Cost Estimation</div>
+        <div class="m-val">MNRE benchmark 2025–26 · PM-KUSUM 30/30/30/10 subsidy structure</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Climate Data Source</div>
+        <div class="m-val">NASA POWER API v2 — 22-year monthly climatological means</div>
+      </div>
+      <div class="method-item">
+        <div class="m-label">Location Input</div>
+        <div class="m-val">Browser GPS (W3C Geolocation API) or manual lat/lon entry</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REFERENCES ── -->
+  <div class="section-card">
+    <h3>References</h3>
+    <ul class="ref-list">
+      <li data-n="1">
+        Allen, R.G., Pereira, L.S., Raes, D. &amp; Smith, M. (1998).
+        <em>Crop Evapotranspiration — Guidelines for Computing Crop Water Requirements.</em>
+        FAO Irrigation and Drainage Paper No. 56. Rome: FAO.
+      </li>
+      <li data-n="2">
+        Habib, S., Tamoor, M., Zaka, M.A. et al. (2023).
+        Technical modelling of solar photovoltaic water pumping system and
+        evaluation of system performance and their socio-economic impact.
+        <em>Heliyon</em>, 9(5), e16105.
+      </li>
+      <li data-n="3">
+        Hilarydoss, S. (2023). Suitability, sizing, economics, environmental
+        impacts and limitations of solar photovoltaic water pumping system for
+        groundwater irrigation — a brief review.
+        <em>Environmental Science and Pollution Research</em>, 30, 71491–71510.
+      </li>
+      <li data-n="4">
+        Cuadros, F., López-Rodríguez, F., Marcos, A. &amp; Coello, J. (2004).
+        A procedure to size solar-powered irrigation (photoirrigation) schemes.
+        <em>Solar Energy</em>, 76(4), 465–473.
+      </li>
+      <li data-n="5">
+        MNRE (2024). <em>Comprehensive Guidelines for Implementation of PM-KUSUM Scheme.</em>
+        Ministry of New and Renewable Energy, Government of India.
+      </li>
+      <li data-n="6">
+        USDA-SCS (1967). <em>Irrigation Water Requirements.</em>
+        Technical Release No. 21. Soil Conservation Service, USDA.
+      </li>
+      <li data-n="7">
+        Maity, R. &amp; Sudhakar, K. (2024). Agri-solar water pumping design,
+        energy, and environmental analysis.
+        <em>Heliyon</em>, PMC11550646.
+      </li>
+      <li data-n="8">
+        NASA POWER Project. Prediction of Worldwide Energy Resource (POWER) API v2.
+        NASA Langley Research Center. Available at: power.larc.nasa.gov
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── DISCLAIMER ── -->
+  <div class="disclaimer">
+    <strong>Disclaimer:</strong> This tool is developed for academic and research
+    purposes as part of a B.Tech final year project at RPCAU Pusa. Results are
+    based on climatological averages from NASA POWER and standard agronomic
+    coefficients from FAO-56. Actual field conditions may vary. Users are advised
+    to validate outputs with local agronomic experts and certified solar system
+    designers before implementation.
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="about-footer">
+    <strong>Developed by Dinesh Kumar</strong><br/>
+    B.Tech Agricultural Engineering · RPCAU Pusa, Bihar<br/>
+    Under the guidance of <strong>Dr. Ravish Chandra</strong><br/>
+    Dr. Rajendra Prasad Central Agricultural University, Pusa, Samastipur, Bihar — 848125<br/><br/>
+    <span style="font-size:0.75rem;">
+      Tool methodology aligned with FAO-56 · PM-KUSUM Guidelines (MNRE 2024) ·
+      NASA POWER API v2
+    </span>
+  </div>
+
+</div>
+</body>
+</html>

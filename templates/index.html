@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SPVWPS Sizing Tool — FAO-56 / PM-KUSUM</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1a5276;
+      --accent:  #2ecc71;
+      --warn:    #e67e22;
+      --bg:      #f4f6f9;
+      --card:    #ffffff;
+      --border:  #d5d8dc;
+      --text:    #2c3e50;
+      --muted:   #7f8c8d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); }
+
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 18px 32px;
+      border-bottom: 4px solid var(--accent);
+    }
+    header h1 { font-size: 1.4rem; }
+    header p  { font-size: 0.82rem; opacity: 0.75; margin-top: 4px; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+
+    /* ── FORM ── */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .form-card h2 { font-size: 1.05rem; color: var(--primary); margin-bottom: 16px; border-bottom: 2px solid var(--accent); padding-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+    label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--muted); }
+    input, select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 5px; font-size: 0.9rem; background: #fdfdfd;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+
+    .crop-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.4fr 1.4fr 1fr auto;
+      gap: 8px;
+      align-items: end;
+      margin-bottom: 8px;
+    }
+    .add-btn, .del-btn {
+      padding: 8px 12px; border: none; border-radius: 5px;
+      cursor: pointer; font-size: 0.82rem; font-weight: 600;
+    }
+    .add-btn { background: var(--accent); color: #fff; }
+    .del-btn { background: #e74c3c; color: #fff; }
+
+    .submit-btn {
+      display: block; width: 100%; padding: 13px;
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 6px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; margin-top: 16px;
+      letter-spacing: 0.5px;
+    }
+    .submit-btn:hover { background: #154360; }
+
+    /* ── RESULTS ── */
+    .result-section { margin-bottom: 28px; }
+    .result-section h2 {
+      font-size: 1.05rem; color: var(--primary);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px; margin-bottom: 14px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .kpi .value { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+    .kpi .unit  { font-size: 0.75rem; color: var(--muted); }
+    .kpi .label { font-size: 0.8rem; margin-top: 4px; color: var(--text); }
+
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.85rem; background: var(--card);
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    }
+    th {
+      background: var(--primary); color: #fff;
+      padding: 9px 12px; text-align: left; font-weight: 600;
+    }
+    td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f8f9fa; }
+
+    .calc-chain {
+      background: #eaf4fb; border-left: 4px solid var(--primary);
+      border-radius: 4px; padding: 14px 18px; font-size: 0.83rem;
+      line-height: 1.8; margin-bottom: 16px; font-family: monospace;
+    }
+
+    .cost-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .cost-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    .cost-card h3 { font-size: 0.92rem; color: var(--primary); margin-bottom: 10px; }
+    .cost-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.85rem; padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .cost-row:last-child { border-bottom: none; font-weight: 700; color: var(--primary); }
+    .highlight-row { color: var(--accent); font-weight: 600; }
+
+    .ref-box {
+      background: #f9f9f9; border: 1px solid var(--border);
+      border-radius: 6px; padding: 14px 18px; font-size: 0.78rem;
+      color: var(--muted); line-height: 1.7;
+    }
+    .ref-box ol { padding-left: 18px; }
+
+    .chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+    canvas { max-height: 250px; }
+
+    @media (max-width: 700px) {
+      .grid-2, .grid-3, .grid-4, .cost-grid { grid-template-columns: 1fr; }
+      .crop-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☀️ Solar PV Water Pumping System (SPVWPS) — Design & Sizing Tool</h1>
+  <p>Methodology: FAO-56 Penman-Monteith ET₀ · FAO Four-Stage Kc · USDA-SCS Effective Rainfall · PM-KUSUM Cost Structure</p>
+  <a href="/about" style="float:right; color:#2ecc71; font-size:0.85rem;
+   font-weight:600; text-decoration:none; margin-top:-36px;">
+   About ↗
+</a>
+</header>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════════════════ INPUT FORM -->
+  <form method="POST" id="mainForm">
+
+    <div class="form-card">
+      <h2>📍 Site & System Parameters</h2>
+     <div style="margin-bottom:14px;">
+ 
+  <!-- Toggle buttons -->
+  <div style="display:flex; gap:10px; margin-bottom:12px;">
+    <button type="button" id="btn-gps"
+      onclick="useGPS()"
+      style="padding:8px 18px; border-radius:5px; border:1.5px solid #1a5276;
+             background:#1a5276; color:#fff; font-weight:600; cursor:pointer; font-size:0.88rem;">
+      📍 Get GPS location
+    </button>
+    <button type="button" id="btn-manual"
+      onclick="useManual()"
+      style="padding:8px 18px; border-radius:5px; border:1.5px solid #1a5276;
+             background:#fff; color:#1a5276; font-weight:600; cursor:pointer; font-size:0.88rem;">
+      ✏️ Enter manually
+    </button>
+  </div>
+ 
+  <!-- Status message -->
+  <div id="gps-status"
+    style="font-size:0.82rem; margin-bottom:10px; min-height:18px; color:#555;">
+  </div>
+ 
+  <!-- Lat / Lon fields + Head (always visible) -->
+  <div class="grid-3">
+    <div>
+      <label>Latitude (°N)</label>
+      <input id="lat-input" name="lat" type="number" step="0.0001"
+             placeholder="e.g. 22.5726" required
+             value="{{ lat or '' }}"
+             style="background:#f0f4f8;"/>
+    </div>
+    <div>
+      <label>Longitude (°E)</label>
+      <input id="lon-input" name="lon" type="number" step="0.0001"
+             placeholder="e.g. 88.3639" required
+             value="{{ lon or '' }}"
+             style="background:#f0f4f8;"/>
+    </div>
+    <div>
+      <label>Total Dynamic Head — TDH (m)</label>
+      <input name="head" type="number" step="0.1" min="1"
+             placeholder="Static + Friction losses" required
+             value="{{ TDH or '' }}"/>
+    </div>
+  </div>
+ 
+  <!-- GPS map preview (shows after GPS fetch) -->
+  <div id="map-preview" style="display:none; margin-top:10px;
+       padding:8px 12px; background:#e8f4fb; border-radius:5px;
+       font-size:0.82rem; color:#1a5276; border:1px solid #bee3f8;">
+    📌 Location set: <span id="map-coords"></span>
+    — <a id="map-link" href="#" target="_blank"
+         style="color:#1a5276; font-weight:600;">
+        See on Google Map
+       </a>
+  </div>
+ 
+</div>
+      <div class="grid-4" style="margin-top:14px;">
+        <div>
+          <label>Pump Efficiency η<sub>p</sub></label>
+          <input name="pump_eff" type="number" step="0.01" min="0.3" max="0.9" value="{{ pump_eta_pct/100 if pump_eta_pct else 0.65 }}" required/>
+        </div>
+        <div>
+          <label>Motor Efficiency η<sub>m</sub></label>
+          <input name="motor_eta" type="number" step="0.01" min="0.5" max="0.98" value="{{ motor_eta_pct/100 if motor_eta_pct else 0.90 }}" required/>
+        </div>
+        <div>
+          <label>Daily Pumping Hours (h)</label>
+          <input name="daily_hours" type="number" step="0.5" min="1" max="12" value="{{ daily_hours or 6 }}" required/>
+        </div>
+        <div>
+          <label>PV System PR (0.70–0.80)</label>
+          <input name="system_pr" type="number" step="0.01" min="0.60" max="0.85" value="{{ system_PR or 0.75 }}" required/>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h2>🌾 Crop Schedule</h2>
+      <div id="cropRows"></div>
+      <button type="button" class="add-btn" onclick="addCropRow()">+ Add Crop</button>
+    </div>
+
+    <button type="submit" class="submit-btn">⚙️ Calculate SPVWPS Design</button>
+  </form>
+
+  <!-- ═══════════════════════════════════════════════════ RESULTS -->
+  {% if results is defined %}
+
+  <!-- Climate Summary -->
+  <div class="result-section" style="margin-top:28px;">
+    <h2>🌤️ NASA POWER Climate Summary (Lat: {{ lat }}, Lon: {{ lon }})</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="value">{{ temp_avg }}</div><div class="unit">°C</div><div class="label">Mean Temperature</div></div>
+      <div class="kpi"><div class="value">{{ rh_avg }}</div><div class="unit">%</div><div class="label">Mean Rel. Humidity</div></div>
+      <div class="kpi"><div class="value">{{ rad_avg }}</div><div class="unit">MJ/m²/day</div><div class="label">Solar Radiation (GHI)</div></div>
+      <div class="kpi"><div class="value">{{ PSH }}</div><div class="unit">h/day</div><div class="label">Peak Sun Hours</div></div>
+      <div class="kpi"><div class="value">{{ eto_avg }}</div><div class="unit">mm/day</div><div class="label">Annual Avg ET₀ (FAO-56)</div></div>
+    </div>
+
+    <div class="grid-2" style="gap:16px;">
+      <div class="chart-wrap">
+        <canvas id="etoChart"></canvas>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="rainChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crop Water Requirement -->
+  <div class="result-section">
+    <h2>💧 Crop Water Requirement (FAO-56 Single Kc Method)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Crop</th><th>Area (ha)</th><th>Season Days</th>
+          <th>Kc (avg)</th><th>ET₀ (mm/d)</th><th>ETc (mm/d)</th>
+          <th>Rain (mm)</th><th>Eff. Rain (mm)</th>
+          <th>CWR (m³)</th><th>NIR (m³)</th><th>App.Eff</th><th>GIR (m³)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{ r.crop }}</td>
+          <td>{{ r.area_ha }}</td>
+          <td>{{ r.days }}</td>
+          <td>{{ r.kc_avg }}</td>
+          <td>{{ r.eto_seas }}</td>
+          <td>{{ r.etc_day }}</td>
+          <td>{{ r.rain_mm }}</td>
+          <td>{{ r.pe_mm }}</td>
+          <td>{{ r.cwr_m3 }}</td>
+          <td>{{ r.nir_m3 }}</td>
+          <td>{{ "%.0f"|format(r.app_eff * 100) }}%</td>
+          <td><strong>{{ r.gir_m3 }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr style="background:#eaf4fb;">
+          <td colspan="8"><strong>TOTAL</strong></td>
+          <td><strong>{{ total_cwr_m3 }} m³</strong></td>
+          <td colspan="2"></td>
+          <td><strong>{{ total_net_m3 }} m³</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="calc-chain" style="margin-top:14px;">
+      <strong>Calculation Chain:</strong><br/>
+      ET₀  = FAO-56 PM Eq.6 = [0.408·Δ·Rn + γ·(900/T+273)·u₂·(es–ea)] / [Δ + γ·(1+0.34·u₂)]<br/>
+      ETc  = Kc × ET₀  (mm/day)  →  Kc adjusted per FAO-56 Eq.62 for local RHmin, wind<br/>
+      CWR  = ETc × Days × Area × 10  (m³, since 1mm over 1ha = 10 m³)<br/>
+      Pe   = Effective Rainfall = Total Rain × 0.70  (USDA-SCS; bounded by ETc)<br/>
+      NIR  = max(CWR – Pe, 0)  →  GIR = NIR ÷ Field Application Efficiency
+    </div>
+  </div>
+
+  <!-- Hydraulic Design -->
+  <div class="result-section">
+    <h2>⚙️ Hydraulic Design & Pump Sizing</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="value">{{ Q_lps }}</div><div class="unit">L/s</div><div class="label">Peak Flow Rate Q</div></div>
+      <div class="kpi"><div class="value">{{ Q_m3h }}</div><div class="unit">m³/h</div><div class="label">Flow Rate Q</div></div>
+      <div class="kpi"><div class="value">{{ TDH }}</div><div class="unit">m</div><div class="label">Total Dynamic Head</div></div>
+      <div class="kpi"><div class="value">{{ P_hyd_kW }}</div><div class="unit">kW</div><div class="label">Hydraulic Power</div></div>
+      <div class="kpi"><div class="value">{{ P_shaft_kW }}</div><div class="unit">kW</div><div class="label">Shaft Power</div></div>
+      <div class="kpi"><div class="value">{{ P_motor_kW }}</div><div class="unit">kW</div><div class="label">Motor Input Power</div></div>
+      <div class="kpi"><div class="value">{{ P_design_kW }}</div><div class="unit">kW</div><div class="label">Design Power (+20%)</div></div>
+      <div class="kpi" style="border:2px solid var(--accent);">
+        <div class="value" style="color:var(--accent);">{{ pump_hp }} HP</div>
+        <div class="unit">standard rating</div>
+        <div class="label">Selected Pump</div>
+      </div>
+    </div>
+
+    <div class="calc-chain">
+      <strong>Step 1 — Peak Flow Rate (Q):</strong><br/>
+      Q = GIR_total / (Season_days × Hours/day × 3600)<br/>
+      Q = {{ total_net_m3 }} / ({{ max_season_days }} × {{ daily_hours }} × 3600) = <strong>{{ Q_lps }} L/s</strong><br/><br/>
+      <strong>Step 2 — Power Cascade (FAO-56; ISO 9906):</strong><br/>
+      P_hydraulic = ρ·g·Q·H = 1000 × 9.81 × {{ "%.5f"|format(Q_lps/1000) }} × {{ TDH }} = <strong>{{ P_hyd_kW }} kW</strong><br/>
+      P_shaft     = P_hyd / η_pump = {{ P_hyd_kW }} / {{ pump_eta_pct/100 }} = <strong>{{ P_shaft_kW }} kW</strong><br/>
+      P_motor     = P_shaft / η_motor = {{ P_shaft_kW }} / {{ motor_eta_pct/100 }} = <strong>{{ P_motor_kW }} kW</strong><br/>
+      P_design    = P_motor × 1.20 (20% safety margin) = <strong>{{ P_design_kW }} kW → {{ req_hp }} HP → Selected: {{ pump_hp }} HP</strong>
+    </div>
+  </div>
+
+  <!-- Solar PV Sizing -->
+  <div class="result-section">
+    <h2>☀️ Solar PV Array Sizing</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="value">{{ PSH }}</div><div class="unit">h/day</div><div class="label">Peak Sun Hours (PSH)</div></div>
+      <div class="kpi"><div class="value">{{ system_PR }}</div><div class="unit">—</div><div class="label">Performance Ratio (PR)</div></div>
+      <div class="kpi"><div class="value">{{ solar_kWp }}</div><div class="unit">kWp</div><div class="label">Required PV Array</div></div>
+      <div class="kpi"><div class="value">{{ panels_required }}</div><div class="unit">× 400 Wp</div><div class="label">No. of Panels</div></div>
+      <div class="kpi"><div class="value">{{ overall_efficiency }}</div><div class="unit">%</div><div class="label">System Efficiency</div></div>
+      <div class="kpi"><div class="value">{{ "{:,}".format(annual_energy_gen) }}</div><div class="unit">kWh/year</div><div class="label">Est. Annual Generation</div></div>
+    </div>
+
+    <div class="calc-chain">
+      <strong>Solar PV Sizing (Cuadros et al., 2004; Maity & Sudhakar, 2024):</strong><br/>
+      E_daily  = P_design × Hours = {{ P_design_kW }} × {{ daily_hours }} = <strong>{{ "%.2f"|format(P_design_kW * daily_hours) }} kWh/day</strong><br/>
+      PV_kWp   = E_daily / (PSH × PR) = {{ "%.2f"|format(P_design_kW * daily_hours) }} / ({{ PSH }} × {{ system_PR }}) = <strong>{{ solar_kWp }} kWp</strong><br/>
+      Panels   = {{ solar_kWp }} kWp / 0.40 kWp per panel = <strong>{{ panels_required }} panels (400 Wp each)</strong>
+    </div>
+  </div>
+
+  <!-- Cost Estimation -->
+  <div class="result-section">
+    <h2>💰 Techno-Economic Analysis — PM-KUSUM Scheme (India, 2025–26)</h2>
+
+    <div class="cost-grid">
+      <div class="cost-card">
+        <h3>📦 Itemised Capital Cost</h3>
+        <div class="cost-row"><span>PV Modules (₹25,000/kWp)</span><span>₹{{ "{:,}".format(cost_pv_module_cost) }}</span></div>
+        <div class="cost-row"><span>Pump + Motor (₹5,000/HP)</span><span>₹{{ "{:,}".format(cost_pump_motor_cost) }}</span></div>
+        <div class="cost-row"><span>Inverter/Controller (₹10,000/kWp)</span><span>₹{{ "{:,}".format(cost_inverter_cost) }}</span></div>
+        <div class="cost-row"><span>Mounting Structure (₹6,000/kWp)</span><span>₹{{ "{:,}".format(cost_mounting_cost) }}</span></div>
+        <div class="cost-row"><span>BOS + Civil Works (₹4,000/kWp)</span><span>₹{{ "{:,}".format(cost_civil_bos_cost) }}</span></div>
+        <div class="cost-row"><span>Miscellaneous / Contingency</span><span>₹{{ "{:,}".format(cost_misc_cost) }}</span></div>
+        <div class="cost-row"><span><strong>TOTAL PROJECT COST</strong></span><span><strong>₹{{ "{:,}".format(cost_total_cost) }}</strong></span></div>
+      </div>
+
+      <div class="cost-card">
+        <h3>🏦 PM-KUSUM Financing (MNRE Guidelines 2024)</h3>
+        <div class="cost-row highlight-row"><span>Central Govt CFA (30%)</span><span>₹{{ "{:,}".format(cost_subsidy_central) }}</span></div>
+        <div class="cost-row highlight-row"><span>State Govt Subsidy (30%)</span><span>₹{{ "{:,}".format(cost_subsidy_state) }}</span></div>
+        <div class="cost-row"><span>Bank Loan (30%)</span><span>₹{{ "{:,}".format(cost_loan) }}</span></div>
+        <div class="cost-row"><span><strong>Farmer Share (10%)</strong></span><span><strong>₹{{ "{:,}".format(cost_farmer_share) }}</strong></span></div>
+        <hr style="margin:10px 0; border:none; border-top:1px solid var(--border);"/>
+        <div class="cost-row"><span>Annual Diesel Saving (est.)</span><span>₹{{ "{:,}".format(cost_annual_saving_est) }}/year</span></div>
+        <div class="cost-row"><span><strong>Payback on Farmer Share</strong></span><span><strong>~{{ cost_payback_years }} years</strong></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- References -->
+  <div class="result-section">
+    <h2>📚 Methodology & References</h2>
+    <div class="ref-box">
+      <ol>
+        <li><strong>Allen, R.G. et al. (1998).</strong> Crop Evapotranspiration — Guidelines for Computing Crop Water Requirements. <em>FAO Irrigation &amp; Drainage Paper No. 56</em>, Rome.</li>
+        <li><strong>Habib, S. et al. (2023).</strong> Technical modelling of solar photovoltaic water pumping system. <em>Heliyon</em>, 9(5), e16105. <a href="https://doi.org/10.1016/j.heliyon.2023.e16105" target="_blank">DOI</a></li>
+        <li><strong>Hilarydoss, S. (2023).</strong> Suitability, sizing, economics of solar PV water pumping. <em>Environ Sci Pollut Res</em>, 30, 71491–71510. <a href="https://doi.org/10.1007/s11356-021-12402-1" target="_blank">DOI</a></li>
+        <li><strong>Cuadros, F. et al. (2004).</strong> A procedure to size solar-powered irrigation schemes. <em>Solar Energy</em>, 76(4), 465–473.</li>
+        <li><strong>MNRE (2024).</strong> Comprehensive Guidelines for PM-KUSUM Scheme. Ministry of New and Renewable Energy, Govt. of India.</li>
+        <li><strong>USDA-SCS (1967).</strong> Irrigation Water Requirements. Technical Release No. 21.</li>
+        <li><strong>Maity, R. &amp; Sudhakar, K. (2024).</strong> Agri-solar water pumping design. <em>Heliyon</em> (PMC11550646).</li>
+        <li><strong>NASA POWER Project.</strong> Prediction of Worldwide Energy Resource API v2. <a href="https://power.larc.nasa.gov" target="_blank">power.larc.nasa.gov</a></li>
+      </ol>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+
+<!-- ═════════════════════ SCRIPTS -->
+<script>
+// Default crop options
+const CROPS = [
+  {k:"wheat",    l:"Wheat"},
+  {k:"rice",     l:"Rice (paddy)"},
+  {k:"maize",    l:"Maize (corn)"},
+  {k:"potato",   l:"Potato"},
+  {k:"sugarcane",l:"Sugarcane"},
+  {k:"soybean",  l:"Soybean"},
+  {k:"cotton",   l:"Cotton"},
+  {k:"tomato",   l:"Tomato"},
+  {k:"onion",    l:"Onion"},
+  {k:"groundnut",l:"Groundnut"},
+];
+
+function cropOptions(sel) {
+  return CROPS.map(c =>
+    `<option value="${c.k}" ${sel === c.k ? "selected" : ""}>${c.l}</option>`
+  ).join("");
+}
+
+let rowCount = 0;
+function addCropRow(cropKey="wheat", area="1", start="", end="", appEff="0.65") {
+  const idx = rowCount++;
+  const div = document.createElement("div");
+  div.className = "crop-row";
+  div.id = `row_${idx}`;
+  div.innerHTML = `
+    <div>
+      ${idx === 0 ? '<label>Crop</label>' : ''}
+      <select name="crop[]">${cropOptions(cropKey)}</select>
+    </div>
+    <div>
+      ${idx === 0 ? '<label>Area (ha)</label>' : ''}
+      <input name="area[]" type="number" step="0.01" min="0.01" value="${area}" placeholder="ha"/>
+    </div>
+    <div>
+      ${idx === 0 ? '<label>App. Efficiency</label>' : ''}
+      <select name="app_eff_${idx}">
+        <option value="0.90" ${appEff=="0.90"?"selected":""}>Drip (90%)</option>
+        <option value="0.80" ${appEff=="0.80"?"selected":""}>Sprinkler (80%)</option>
+        <option value="0.65" ${appEff==""||appEff=="0.65"?"selected":""}>Furrow (65%)</option>
+        <option value="0.55" ${appEff=="0.55"?"selected":""}>Flood (55%)</option>
+      </select>
+    </div>
+    <div>
+      ${idx === 0 ? '<label>Season Start</label>' : ''}
+      <input name="start[]" type="date" value="${start}" required/>
+    </div>
+    <div>
+      ${idx === 0 ? '<label>Season End</label>' : ''}
+      <input name="end[]" type="date" value="${end}" required/>
+    </div>
+    <div style="display:flex;align-items:flex-end;">
+      <button type="button" class="del-btn" onclick="document.getElementById('row_${idx}').remove()">✕</button>
+    </div>
+  `;
+  document.getElementById("cropRows").appendChild(div);
+}
+
+addCropRow();  // Start with one row
+
+// ─Charts
+</script>
+
+{% if eto_mon_json is defined %}
+<script>
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/*
+ * BUG FIX (index.html):
+ * Previously: data: {{ eto_mon_json | tojson }}
+ *
+ * eto_mon_json and rain_mon_json are already valid JSON strings produced by
+ * json.dumps() in app.py (e.g. "[3.2, 2.1, ...]").
+ * Applying Jinja2's | tojson filter on top of that double-encodes them into
+ * an escaped string literal (e.g. "\"[3.2, 2.1, ...]\""), which Chart.js
+ * cannot parse as a numeric array — causing all bars to render as 0.
+ *
+ * Fix: use | safe instead of | tojson.
+ * | safe tells Jinja2 to output the value as-is (already trusted JSON),
+ * so Chart.js receives a proper JavaScript array literal.
+ *
+ * Reference: Jinja2 docs — safe vs tojson filters.
+ * This fix affects ONLY chart display; no calculation logic is changed.
+ */
+
+new Chart(document.getElementById("etoChart"), {
+  type: "bar",
+  data: {
+    labels: months,
+    datasets: [{
+      label: "Monthly ET₀ (mm/day) — FAO-56 PM",
+      data: {{ eto_mon_json | safe }},
+      backgroundColor: "rgba(26,82,118,0.75)",
+      borderColor: "#1a5276",
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { font: { size: 11 } } } },
+    scales: { y: { title: { display: true, text: "mm/day" } } }
+  }
+});
+
+new Chart(document.getElementById("rainChart"), {
+    type: "bar",
+    data: {
+        labels: months,
+        datasets: [{
+            label: "Monthly Rainfall (mm/month) – NASA POWER",
+            data: {{ rain_mon_json | safe }},
+            backgroundColor: "rgba(46,204,113,0.70)",
+            borderColor: "#2ecc71",
+            borderWidth: 1,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { labels: { font: { size: 11 } } }
+        },
+        scales: {
+            y: { title: { display: true, text: "mm" } }
+        }
+    }
+);
+</script>
+<script>
+// ── GPS / Manual toggle logic ──────────────────────────────
+ 
+function useGPS() {
+  var status = document.getElementById('gps-status');
+  var latInput = document.getElementById('lat-input');
+  var lonInput = document.getElementById('lon-input');
+  var preview  = document.getElementById('map-preview');
+  var coords   = document.getElementById('map-coords');
+  var mapLink  = document.getElementById('map-link');
+ 
+  // Button states
+  document.getElementById('btn-gps').style.background    = '#1a5276';
+  document.getElementById('btn-gps').style.color         = '#fff';
+  document.getElementById('btn-manual').style.background = '#fff';
+  document.getElementById('btn-manual').style.color      = '#1a5276';
+ 
+  // Check browser support
+  if (!navigator.geolocation) {
+    status.style.color = '#c0392b';
+    status.textContent = '❌ Aapka browser GPS support nahi karta. Manual use karo.';
+    return;
+  }
+ 
+  status.style.color = '#e67e22';
+  status.textContent = '⏳ GPS location fetch ho rahi hai... (10-15 sec tak wait karo)';
+ 
+  // Lock fields while fetching
+  latInput.readOnly = true;
+  lonInput.readOnly = true;
+  latInput.style.background = '#f0f4f8';
+  lonInput.style.background = '#f0f4f8';
+ 
+  navigator.geolocation.getCurrentPosition(
+    // ── SUCCESS ──
+    function(pos) {
+      var lat = pos.coords.latitude.toFixed(6);
+      var lon = pos.coords.longitude.toFixed(6);
+      var acc = Math.round(pos.coords.accuracy);
+ 
+      latInput.value = lat;
+      lonInput.value = lon;
+ 
+      status.style.color = '#27ae60';
+      status.textContent = '✅ Location mili! Accuracy: ±' + acc + ' meters';
+ 
+      // Map preview
+      coords.textContent   = lat + ', ' + lon;
+      mapLink.href = 'https://www.google.com/maps?q=' + lat + ',' + lon;
+      preview.style.display = 'block';
+    },
+    // ── ERROR ──
+    function(err) {
+      latInput.readOnly = false;
+      lonInput.readOnly = false;
+      latInput.style.background = '#fff';
+      lonInput.style.background = '#fff';
+      preview.style.display = 'none';
+ 
+      var msg = {
+        1: '❌ Location permission denied. Browser settings mein allow karo ya manual use karo.',
+        2: '❌ GPS signal nahi mila. Network check karo ya manual use karo.',
+        3: '❌ Timeout ho gayi. Dobara try karo ya manual use karo.'
+      };
+      status.style.color = '#c0392b';
+      status.textContent = msg[err.code] || '❌ Unknown error. Manual use karo.';
+    },
+    // ── OPTIONS ──
+    {
+      enableHighAccuracy: true,   // best accuracy (uses GPS chip)
+      timeout: 15000,             // 15 sec max wait
+      maximumAge: 0               // fresh location, no cache
+    }
+  );
+}
+ 
+function useManual() {
+  var latInput = document.getElementById('lat-input');
+  var lonInput = document.getElementById('lon-input');
+  var status   = document.getElementById('gps-status');
+  var preview  = document.getElementById('map-preview');
+ 
+  // Button states
+  document.getElementById('btn-manual').style.background = '#1a5276';
+  document.getElementById('btn-manual').style.color      = '#fff';
+  document.getElementById('btn-gps').style.background    = '#fff';
+  document.getElementById('btn-gps').style.color         = '#1a5276';
+ 
+  // Unlock fields
+  latInput.readOnly = false;
+  lonInput.readOnly = false;
+  latInput.style.background = '#fff';
+  lonInput.style.background = '#fff';
+  latInput.focus();
+ 
+  status.style.color = '#555';
+  status.textContent = '✏️ Latitude aur Longitude manually type karo.';
+  preview.style.display = 'none';
+}
+ 
+// Auto-try GPS on page load if fields are empty
+window.addEventListener('load', function() {
+  var lat = document.getElementById('lat-input').value;
+  var lon = document.getElementById('lon-input').value;
+  if (!lat && !lon) {
+    useGPS();
+  } else {
+    // Fields already filled (form resubmit) — show manual mode
+    useManual();
+  }
+});
+</script>
+</body>
+</html>
