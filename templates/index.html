@@ -525,7 +525,7 @@ new Chart(document.getElementById("etoChart"), {
     labels: months,
     datasets: [{
       label: "Monthly ET₀ (mm/day) — FAO-56 PM",
-      data: {{ eto_mon_json | safe }},
+      data: JSON.parse("{{ eto_mon_json | safe }}"),
       backgroundColor: "rgba(26,82,118,0.75)",
       borderColor: "#1a5276",
       borderWidth: 1,
@@ -544,7 +544,7 @@ new Chart(document.getElementById("rainChart"), {
         labels: months,
         datasets: [{
             label: "Monthly Rainfall (mm/month) – NASA POWER",
-            data: {{ rain_mon_json | safe }},
+            data: JSON.parse("{{ rain_mon_json | safe }}"),
             backgroundColor: "rgba(46,204,113,0.70)",
             borderColor: "#2ecc71",
             borderWidth: 1,
@@ -561,9 +561,11 @@ new Chart(document.getElementById("rainChart"), {
     }
 });  
 </script>
+
+{% endif %}
+
 <script>
-// ── GPS / Manual toggle logic ──────────────────────────────
- 
+// ── GPS / Manual toggle logic
 function useGPS() {
   var status = document.getElementById('gps-status');
   var latInput = document.getElementById('lat-input');
@@ -581,7 +583,7 @@ function useGPS() {
   // Check browser support
   if (!navigator.geolocation) {
     status.style.color = '#c0392b';
-    status.textContent = '❌ Aapka browser GPS support nahi karta. Manual use karo.';
+    status.textContent = '❌ GPS Not supported . use Manual.';
     return;
   }
  
