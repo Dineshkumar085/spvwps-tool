@@ -1,0 +1,47 @@
+// SPVWPS Tool — Service Worker
+// Caches static assets for faster loads. Network-first for API calls.
+
+const CACHE = 'spvwps-v1';
+const STATIC = [
+  '/',
+  '/about',
+  '/static/manifest.json',
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(STATIC)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+
+  // Always network-first for NASA API and form POSTs
+  if (url.hostname.includes('nasa') ||
+      e.request.method === 'POST' ||
+      url.pathname.startsWith('/api/') ||
+      url.pathname === '/download-report') {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
+  // Cache-first for everything else
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request).then(resp => {
+      if (resp && resp.status === 200 && resp.type === 'basic') {
+        const clone = resp.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+      }
+      return resp;
+    }))
+  );
+});

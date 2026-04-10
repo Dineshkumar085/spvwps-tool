@@ -1,0 +1,14 @@
+{
+  "name": "SPVWPS Design Tool",
+  "short_name": "SPVWPS",
+  "description": "Solar PV Water Pumping System Design Tool — FAO-56 PM-KUSUM",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#1a5276",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "static/1000189017.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "static/1000189017.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
