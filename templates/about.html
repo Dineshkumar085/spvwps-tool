@@ -262,7 +262,48 @@
   <h1>☀️ SPVWPS Design Tool — About</h1>
   <p>Solar Photovoltaic Water Pumping System · FAO-56 Penman-Monteith · PM-KUSUM</p>
 </header>
+<!-- RATING SECTION -->
+<div class="rating-section" style="text-align:center; margin:2rem 0; padding:2rem; background:rgba(255,255,255,0.05); border-radius:16px;">
+  <h3 style="margin-bottom:0.5rem;">Rate this Tool</h3>
+  <p style="color:#aaa; font-size:0.9rem; margin-bottom:1rem;">Your feedback helps us improve!</p>
+  
+  <div class="stars" id="starRating" style="font-size:2.5rem; cursor:pointer; letter-spacing:8px;">
+    <span data-val="1">☆</span>
+    <span data-val="2">☆</span>
+    <span data-val="3">☆</span>
+    <span data-val="4">☆</span>
+    <span data-val="5">☆</span>
+  </div>
 
+  <p id="ratingMsg" style="margin-top:1rem; color:#2ecc71; font-weight:600; display:none;">
+    Thanks for your feedback! 🎉
+  </p>
+</div>
+
+<script>
+  const stars = document.querySelectorAll('#starRating span');
+  stars.forEach(star => {
+    star.addEventListener('mouseover', () => {
+      const val = +star.dataset.val;
+      stars.forEach(s => s.textContent = +s.dataset.val <= val ? '★' : '☆');
+    });
+    star.addEventListener('mouseout', () => {
+      stars.forEach(s => s.textContent = '☆');
+    });
+    star.addEventListener('click', () => {
+      const val = +star.dataset.val;
+      stars.forEach(s => {
+        s.textContent = +s.dataset.val <= val ? '★' : '☆';
+        s.style.color = +s.dataset.val <= val ? '#f59e0b' : '#aaa';
+      });
+      document.getElementById('ratingMsg').style.display = 'block';
+      document.getElementById('ratingMsg').textContent = 
+        val === 5 ? '★ Excellent! Thank you! 🎉' :
+        val >= 3 ? '👍 Thanks for your feedback!' :
+        '🙏 We will improve, thanks!';
+    });
+  });
+</script>
 <div class="container">
 
   <a href="/" class="back-btn">← Back to Tool</a>
