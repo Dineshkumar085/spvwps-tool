@@ -1,14 +1,24 @@
 {
-  "name": "SPVWPS Design Tool",
-  "short_name": "SPVWPS",
-  "description": "Solar PV Water Pumping System Design Tool — FAO-56 PM-KUSUM",
+  "name": "Agri Pump Advisor",
+  "short_name": "AgriPump",
+  "description": "Solar Powered Agricultural Water Pump Advisor",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4f6f9",
-  "theme_color": "#1a5276",
-  "orientation": "portrait-primary",
+ 
+  "background_color": "#ffffff",
+  "theme_color": "#1a6b3c",
   "icons": [
-    { "src": "static/1000189017.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "static/1000189017.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

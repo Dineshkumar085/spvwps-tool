@@ -1,13 +1,12 @@
 // SPVWPS Tool — Service Worker
 // Caches static assets for faster loads. Network-first for API calls.
 
-const CACHE = 'spvwps-v1';
 const STATIC = [
   '/',
   '/about',
   '/static/manifest.json',
+  '/static/app.png',     // ← ye add karo
 ];
-
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(STATIC)).then(() => self.skipWaiting())

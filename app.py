@@ -956,5 +956,16 @@ def api_eto():
 @app.route("/about")
 def about():
     return render_template("about.html")
+@app.route('/static/sw.js')           # ← pehle, bahar
+def service_worker():
+    return app.send_static_file('sw.js')
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('app.png')
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)   # ← last mein
+
+
+   
+    

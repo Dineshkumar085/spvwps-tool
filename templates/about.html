@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- PWA -->
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#2e7d32">
+<link rel="apple-touch-icon" href="/static/app.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SPVWPS">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>About — SPVWPS Tool</title>
@@ -262,7 +269,11 @@
 
   <!-- ── DEVELOPER ── -->
   <div class="hero">
-    <div class="avatar">DK</div>
+<div class="avatar">
+    <img src="{{ url_for('static', filename='Dinesh.jpg') }}" 
+         alt="Dinesh Kumar" 
+         style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+</div>
     <div class="hero-info">
       <h2>Dinesh Kumar</h2>
       <div class="role">
@@ -277,11 +288,12 @@
         <span class="badge badge-blue">Python · Flask</span>
       </div>
       <p>
-        Developed as part of B.Tech final year research project at RPCAU Pusa.
+        Developed as part of B.Tech final year  project at RPCAU Pusa.
         This tool implements the internationally accepted FAO-56 Penman-Monteith
         evapotranspiration methodology for accurate crop water requirement estimation
         and solar pump sizing — bridging the gap between scientific irrigation design
         and on-ground implementation under India's PM-KUSUM scheme.
+        Thanks to Ravish Chandra sir for their invaluable guidance and mentorship for this project.
       </p>
     </div>
   </div>
@@ -290,7 +302,11 @@
   <div class="section-card">
     <h3>Project Guide</h3>
     <div class="guide-card">
-      <div class="avatar-sm">RC</div>
+      <div class="avatar">
+    <img src="{{ url_for('static', filename='ravishsir.jpg') }}" 
+         alt="Dinesh Kumar" 
+         style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+</div>
       <div class="guide-info">
         <h4>Dr. Ravish Chandra</h4>
         <div class="g-role">
@@ -417,10 +433,7 @@
     B.Tech Agricultural Engineering · RPCAU Pusa, Bihar<br/>
     Under the guidance of <strong>Dr. Ravish Chandra</strong><br/>
     Dr. Rajendra Prasad Central Agricultural University, Pusa, Samastipur, Bihar — 848125<br/><br/>
-    <span style="font-size:0.75rem;">
-      Tool methodology aligned with FAO-56 · PM-KUSUM Guidelines (MNRE 2024) ·
-      NASA POWER API v2
-    </span>
+  
   </div>
 
 </div>
