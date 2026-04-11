@@ -262,48 +262,6 @@
   <h1>☀️ SPVWPS Design Tool — About</h1>
   <p>Solar Photovoltaic Water Pumping System · FAO-56 Penman-Monteith · PM-KUSUM</p>
 </header>
-<!-- RATING SECTION -->
-<div class="rating-section" style="text-align:center; margin:2rem 0; padding:2rem; background:rgba(255,255,255,0.05); border-radius:16px;">
-  <h3 style="margin-bottom:0.5rem;">Rate this Tool</h3>
-  <p style="color:#aaa; font-size:0.9rem; margin-bottom:1rem;">Your feedback helps us improve!</p>
-  
-  <div class="stars" id="starRating" style="font-size:2.5rem; cursor:pointer; letter-spacing:8px;">
-    <span data-val="1">☆</span>
-    <span data-val="2">☆</span>
-    <span data-val="3">☆</span>
-    <span data-val="4">☆</span>
-    <span data-val="5">☆</span>
-  </div>
-
-  <p id="ratingMsg" style="margin-top:1rem; color:#2ecc71; font-weight:600; display:none;">
-    Thanks for your feedback! 🎉
-  </p>
-</div>
-
-<script>
-  const stars = document.querySelectorAll('#starRating span');
-  stars.forEach(star => {
-    star.addEventListener('mouseover', () => {
-      const val = +star.dataset.val;
-      stars.forEach(s => s.textContent = +s.dataset.val <= val ? '★' : '☆');
-    });
-    star.addEventListener('mouseout', () => {
-      stars.forEach(s => s.textContent = '☆');
-    });
-    star.addEventListener('click', () => {
-      const val = +star.dataset.val;
-      stars.forEach(s => {
-        s.textContent = +s.dataset.val <= val ? '★' : '☆';
-        s.style.color = +s.dataset.val <= val ? '#f59e0b' : '#aaa';
-      });
-      document.getElementById('ratingMsg').style.display = 'block';
-      document.getElementById('ratingMsg').textContent = 
-        val === 5 ? '★ Excellent! Thank you! 🎉' :
-        val >= 3 ? '👍 Thanks for your feedback!' :
-        '🙏 We will improve, thanks!';
-    });
-  });
-</script>
 <div class="container">
 
   <a href="/" class="back-btn">← Back to Tool</a>
@@ -467,7 +425,122 @@
     to validate outputs with local agronomic experts and certified solar system
     designers before implementation.
   </div>
+<!-- RATING SECTION -->
+<div style="text-align:center;padding:2rem 1rem;">
+  <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;">Rate this Tool</h3>
+  <p style="font-size:14px;color:#888;margin-bottom:1.5rem;">How helpful was Agri Pump Advisor?</p>
 
+  <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 20px;margin-bottom:1.5rem;font-size:14px;color:#aaa;">
+    <span style="font-size:22px;font-weight:600;color:#f59e0b;" id="avgNum">—</span>
+    <span>/ 5 &nbsp;·&nbsp; <span id="totalCount">0</span> ratings</span>
+  </div>
+
+  <div style="position:relative;display:inline-block;" id="ratingInner">
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:1rem;" id="starsRow">
+      <span class="rstar" data-v="1">&#9733;</span>
+      <span class="rstar" data-v="2">&#9733;</span>
+      <span class="rstar" data-v="3">&#9733;</span>
+      <span class="rstar" data-v="4">&#9733;</span>
+      <span class="rstar" data-v="5">&#9733;</span>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;width:220px;margin:0 auto 1.5rem;">
+    <span style="font-size:11px;color:#888;">Poor</span>
+    <span style="font-size:11px;color:#888;">Excellent</span>
+  </div>
+
+  <div style="min-height:40px;display:flex;align-items:center;justify-content:center;">
+    <span id="ratingMsg" style="font-size:15px;font-weight:600;padding:8px 20px;border-radius:12px;display:none;"></span>
+  </div>
+</div>
+
+<style>
+.rstar{font-size:2.8rem;cursor:pointer;transition:transform 0.15s;color:#d1d5db;line-height:1;user-select:none;}
+.rstar.hovered{transform:scale(1.25);color:#fbbf24;filter:drop-shadow(0 0 6px #f59e0b88);}
+.rstar.selected{color:#f59e0b;animation:rpop 0.3s ease;}
+@keyframes rpop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.2)}}
+@keyframes rfadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.rstar.confetti-anim{position:absolute;pointer-events:none;}
+</style>
+
+<script>
+(function(){
+  const stars = document.querySelectorAll('.rstar');
+  const avgNum = document.getElementById('avgNum');
+  const totalCount = document.getElementById('totalCount');
+  const msgBox = document.getElementById('ratingMsg');
+  let selected = 0;
+
+  const labels = ['','Needs work','Could be better','Pretty good!','Really helpful!','Excellent!'];
+  const emojis = ['','😕','😐','🙂','😊','🌟'];
+  const msgColors = ['','#fee2e2','#fef9c3','#fef9c3','#dcfce7','#dcfce7'];
+  const msgText = ['','#991b1b','#854d0e','#854d0e','#166534','#166534'];
+
+  function updateStars(val, cls){
+    stars.forEach(s=>{
+      s.classList.remove('selected','hovered');
+      s.style.color = +s.dataset.v <= val ? '#f59e0b' : '';
+      if(+s.dataset.v <= val) s.classList.add(cls);
+    });
+  }
+
+  function spawnConfetti(val){
+    if(val < 4) return;
+    const wrap = document.getElementById('ratingInner');
+    ['★','✦','•','◆','★','✦','•','◆'].forEach((p,i)=>{
+      const el = document.createElement('span');
+      el.textContent = p;
+      el.style.cssText = `position:absolute;left:${30+Math.random()*40}%;top:20%;color:#f59e0b;font-size:16px;opacity:1;transition:all 0.8s ease;pointer-events:none;`;
+      wrap.appendChild(el);
+      setTimeout(()=>{el.style.transform=`translate(${(Math.random()-0.5)*80}px,${-50-Math.random()*40}px)`;el.style.opacity='0';},50);
+      setTimeout(()=>el.remove(),900);
+    });
+  }
+
+  // Load existing rating from server
+  fetch('/get-rating').then(r=>r.json()).then(data=>{
+    if(data.total > 0){
+      avgNum.textContent = data.avg;
+      totalCount.textContent = data.total;
+    }
+  }).catch(()=>{});
+
+  stars.forEach(star=>{
+    star.addEventListener('mouseenter',()=>{
+      if(selected) return;
+      updateStars(+star.dataset.v,'hovered');
+    });
+    star.addEventListener('mouseleave',()=>{
+      if(selected) return;
+      stars.forEach(s=>{s.classList.remove('hovered');s.style.color='';});
+    });
+    star.addEventListener('click',()=>{
+      if(selected) return;
+      selected = +star.dataset.v;
+      updateStars(selected,'selected');
+      spawnConfetti(selected);
+
+      // Server pe save karo
+      fetch('/submit-rating',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({rating:selected})
+      }).then(r=>r.json()).then(data=>{
+        avgNum.textContent = data.avg;
+        totalCount.textContent = data.total;
+      }).catch(()=>{});
+
+      msgBox.style.display = 'inline-block';
+      msgBox.style.background = msgColors[selected];
+      msgBox.style.color = msgText[selected];
+      msgBox.style.animation = 'rfadeUp 0.3s ease';
+      msgBox.textContent = emojis[selected]+' '+labels[selected];
+      stars.forEach(s=>s.style.cursor='default');
+    });
+  });
+})();
+</script>
   <!-- ── FOOTER ── -->
   <div class="about-footer">
     <strong>Developed by Dinesh Kumar</strong><br/>
