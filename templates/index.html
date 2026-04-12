@@ -163,11 +163,12 @@
 
 <header>
   <h1>☀️ Solar PV Water Pumping System (SPVWPS) — Design & Sizing Tool</h1>
-  <p>Methodology: FAO-56 Penman-Monteith ET₀ · FAO Four-Stage Kc · USDA-SCS Effective Rainfall · PM-KUSUM Cost Structure</p>
-  <a href="/about" style="float:right; color:white; font-size:0.9rem; font-weight:600; text-decoration:none; margin-top:-36px; background:rgba(255,255,255,0.2); padding:6px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.5);">About ↗</a>
+  <p>Methodology: FAO-56 Penman-Monteith ET₀ · FAO Four-Stage Kc · USDA-SCS Effective Rainfall ·</p>
+  <a href="/about" style="float:right; color:rgb(0, 0, 0); font-size:0.9rem; font-weight:600; text-decoration:none; margin-top:-20px; background:rgb(243, 236, 236); padding:6px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.5);">About ↗</a>
 </header>
 
 <div class="container">
+
 
   <!-- ═══════════════════════════════════════════════════ INPUT FORM -->
   <form method="POST" id="mainForm">
@@ -611,7 +612,7 @@ function useGPS() {
       lonInput.value = lon;
  
       status.style.color = '#27ae60';
-      status.textContent = '✅ Location mili! Accuracy: ±' + acc + ' meters';
+      status.textContent = '✅ Location fetched! Accuracy: ±' + acc + ' meters';
  
       // Map preview
       coords.textContent   = lat + ', ' + lon;
@@ -627,9 +628,9 @@ function useGPS() {
       preview.style.display = 'none';
  
       var msg = {
-        1: '❌ Location permission denied. Browser settings mein allow karo ya manual use karo.',
-        2: '❌ GPS signal nahi mila. Network check karo ya manual use karo.',
-        3: '❌ Timeout ho gayi. Dobara try karo ya manual use karo.'
+        1: '❌ Location permission denied. allow location or user manual.',
+        2: '❌ GPS signal not found. check Network or use manual option.',
+        3: '❌ Timeout. try again or enter location manually.'
       };
       status.style.color = '#c0392b';
       status.textContent = msg[err.code] || '❌ Unknown error. Manual use karo.';
