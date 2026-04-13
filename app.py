@@ -953,6 +953,55 @@ def api_eto():
 # =============================================================================
 # RUN
 # =============================================================================
+import os
+
+JSONBIN_KEY = os.environ.get("JSONBIN_KEY", "")
+JSONBIN_BIN = os.environ.get("JSONBIN_BIN", "")
+JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{JSONBIN_BIN}"
+
+def load_ratings_cloud():
+    try:
+        resp = requests.get(
+            JSONBIN_URL,
+            headers={"X-Master-Key": JSONBIN_KEY},
+            timeout=10
+        )
+        return resp.json().get("record", {}).get("ratings", [])
+    except:
+        return []
+
+def save_ratings_cloud(ratings):
+    try:
+        requests.put(
+            JSONBIN_URL,
+            json={"ratings": ratings},
+            headers={
+                "X-Master-Key": JSONBIN_KEY,
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+    except:
+        pass
+
+@app.route("/get-rating")
+def get_rating():
+    ratings = load_ratings_cloud()
+    total = len(ratings)
+    avg   = round(sum(ratings) / total, 1) if total else 0
+    return jsonify({"avg": avg, "total": total})
+
+@app.route("/submit-rating", methods=["POST"])
+def submit_rating():
+    data   = request.get_json()
+    rating = int(data.get("rating", 0))
+    ratings = load_ratings_cloud()
+    if 1 <= rating <= 5:
+        ratings.append(rating)
+        save_ratings_cloud(ratings)
+    total = len(ratings)
+    avg   = round(sum(ratings) / total, 1) if total else 0
+    return jsonify({"avg": avg, "total": total})
 @app.route("/about")
 def about():
     return render_template("about.html")
