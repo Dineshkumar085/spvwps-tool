@@ -963,26 +963,34 @@ def load_ratings_cloud():
     try:
         resp = requests.get(
             JSONBIN_URL,
-            headers={"X-Master-Key": JSONBIN_KEY},
+            headers={
+                "X-Master-Key": JSONBIN_KEY,
+                "Cache-Control": "no-cache"
+            },
             timeout=10
         )
-        return resp.json().get("record", {}).get("ratings", [])
-    except:
+        data = resp.json()
+        return data.get("record", {}).get("ratings", [])
+    except Exception as e:
+        print(f"Load ratings error: {e}")
+    
         return []
 
 def save_ratings_cloud(ratings):
     try:
-        requests.put(
+        resp = requests.put(
             JSONBIN_URL,
             json={"ratings": ratings},
             headers={
                 "X-Master-Key": JSONBIN_KEY,
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "versioning": "false"
             },
             timeout=10
         )
-    except:
-        pass
+        print(f"Save response: {resp.status_code}")
+    except Exception as e:
+        print(f"Save ratings error: {e}")
 
 @app.route("/get-rating")
 def get_rating():
