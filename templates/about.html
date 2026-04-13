@@ -520,7 +520,7 @@
     .then(data => {
       document.getElementById('avgNum').textContent = data.total > 0 ? data.avg : '—';
       document.getElementById('totalCount').textContent = data.total;
-      document.getElementById('fiveStarPct').textContent = data.five_pct > 0 ? data.five_pct + '%' : '—';
+      document.getElementById('fiveStarPct').textContent = data.total > 0 ? data.five_pct + '%' : '—';
     })
     .catch(() => {});
 
