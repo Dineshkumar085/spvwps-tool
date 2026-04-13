@@ -540,13 +540,14 @@
       spawnConfetti(selected);
 
       // Server pe save karo
-      fetch('/submit-rating',{
+     fetch('/submit-rating',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({rating:selected})
       }).then(r=>r.json()).then(data=>{
-        avgNum.textContent = data.avg;
-        totalCount.textContent = data.total;
+        document.getElementById('avgNum').textContent = data.avg;
+        document.getElementById('totalCount').textContent = data.total;
+        document.getElementById('fiveStarPct').textContent = data.five_pct + '%';
       }).catch(()=>{});
 
       msgBox.style.display = 'inline-block';

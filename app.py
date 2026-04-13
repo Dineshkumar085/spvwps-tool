@@ -994,15 +994,16 @@ def get_rating():
 
 @app.route("/submit-rating", methods=["POST"])
 def submit_rating():
-    data   = request.get_json()
-    rating = int(data.get("rating", 0))
+    data    = request.get_json()
+    rating  = int(data.get("rating", 0))
     ratings = load_ratings_cloud()
     if 1 <= rating <= 5:
         ratings.append(rating)
         save_ratings_cloud(ratings)
-    total = len(ratings)
-    avg   = round(sum(ratings) / total, 1) if total else 0
-    return jsonify({"avg": avg, "total": total})
+    total    = len(ratings)
+    avg      = round(sum(ratings) / total, 1) if total else 0
+    five_pct = round((ratings.count(5) / total) * 100) if total else 0
+    return jsonify({"avg": avg, "total": total, "five_pct": five_pct})
 @app.route("/about")
 def about():
     return render_template("about.html")
