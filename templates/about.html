@@ -430,10 +430,27 @@
   <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;">Rate this Tool</h3>
   <p style="font-size:14px;color:#888;margin-bottom:1.5rem;">How helpful was Agri Pump Advisor?</p>
 
-  <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 20px;margin-bottom:1.5rem;font-size:14px;color:#aaa;">
-    <span style="font-size:22px;font-weight:600;color:#f59e0b;" id="avgNum">—</span>
-    <span>/ 5 &nbsp;·&nbsp; <span id="totalCount">0</span> ratings</span>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-bottom:1.5rem;">
+
+  <!-- Average -->
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 24px;text-align:center;min-width:120px;">
+    <div style="font-size:2rem;font-weight:700;color:#f59e0b;" id="avgNum">—</div>
+    <div style="font-size:0.78rem;color:#888;margin-top:2px;">Average Rating</div>
   </div>
+
+  <!-- Total -->
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 24px;text-align:center;min-width:120px;">
+    <div style="font-size:2rem;font-weight:700;color:#1a5276;" id="totalCount">0</div>
+    <div style="font-size:0.78rem;color:#888;margin-top:2px;">Total Ratings</div>
+  </div>
+
+  <!-- 5 Star % -->
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 24px;text-align:center;min-width:120px;">
+    <div style="font-size:2rem;font-weight:700;color:#2ecc71;" id="fiveStarPct">—</div>
+    <div style="font-size:0.78rem;color:#888;margin-top:2px;">5-Star %</div>
+  </div>
+
+</div>
 
   <div style="position:relative;display:inline-block;" id="ratingInner">
     <div style="display:flex;justify-content:center;gap:10px;margin-bottom:1rem;" id="starsRow">
@@ -498,13 +515,14 @@
     });
   }
 
-  // Load existing rating from server
-  fetch('/get-rating').then(r=>r.json()).then(data=>{
-    if(data.total > 0){
-      avgNum.textContent = data.avg;
-      totalCount.textContent = data.total;
-    }
-  }).catch(()=>{});
+  fetch('/get-rating')
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('avgNum').textContent = data.total > 0 ? data.avg : '—';
+      document.getElementById('totalCount').textContent = data.total;
+      document.getElementById('fiveStarPct').textContent = data.five_pct > 0 ? data.five_pct + '%' : '—';
+    })
+    .catch(() => {});
 
   stars.forEach(star=>{
     star.addEventListener('mouseenter',()=>{

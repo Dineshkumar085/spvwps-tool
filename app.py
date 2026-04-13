@@ -987,9 +987,10 @@ def save_ratings_cloud(ratings):
 @app.route("/get-rating")
 def get_rating():
     ratings = load_ratings_cloud()
-    total = len(ratings)
-    avg   = round(sum(ratings) / total, 1) if total else 0
-    return jsonify({"avg": avg, "total": total})
+    total    = len(ratings)
+    avg      = round(sum(ratings) / total, 1) if total else 0
+    five_pct = round((ratings.count(5) / total) * 100) if total else 0
+    return jsonify({"avg": avg, "total": total, "five_pct": five_pct})
 
 @app.route("/submit-rating", methods=["POST"])
 def submit_rating():
